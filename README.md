@@ -1,1 +1,699 @@
 # My-project
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<head>
+<meta property="og:url" content="https://example.com">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YemenMarket - Premier E-Commerce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .slide-in { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        .loader {
+            border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%;
+            width: 30px; height: 30px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 500: '#0F766E', 600: '#0D9488', 900: '#134E4A' }, // Teal theme
+                        accent: '#F59E0B'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <!-- App Container -->
+    <div id="app" class="flex flex-col min-h-screen">
+        <!-- Navigation -->
+        <header class="bg-white shadow-md sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <!-- Logo -->
+                    <div class="flex items-center cursor-pointer" onclick="router.navigate('home')">
+                        <i class="fa-solid fa-store text-3xl text-brand-500 mr-2"></i>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800 tracking-tight">Yemen<span class="text-brand-500">Market</span></h1>
+                            <p class="text-xs text-gray-500">Trusted Since 2025</p>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="hidden md:flex flex-1 mx-10 relative">
+                        <input type="text" id="searchInput" placeholder="Search for products (e.g. Coffee, Solar, Spices)..." 
+                            class="w-full border border-gray-300 rounded-l-full py-2 px-4 focus:outline-none focus:border-brand-500"
+                            onkeyup="if(event.key === 'Enter') app.searchProducts()">
+                        <button onclick="app.searchProducts()" class="bg-brand-500 text-white px-6 rounded-r-full hover:bg-brand-600 transition">
+                            <i class="fa-solid fa-search"></i>
+                        </button>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center space-x-6">
+                        <div class="relative cursor-pointer group" onclick="router.navigate('account')">
+                            <i class="fa-regular fa-user text-xl hover:text-brand-500 transition"></i>
+                            <span id="userStatus" class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></span>
+                        </div>
+                        <div class="relative cursor-pointer" onclick="ui.toggleCart()">
+                            <i class="fa-solid fa-cart-shopping text-xl hover:text-brand-500 transition"></i>
+                            <span id="cartCount" class="absolute -top-2 -right-2 bg-accent text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile Search -->
+            <div class="md:hidden px-4 py-2 bg-gray-100 border-t">
+                <input type="text" class="w-full p-2 rounded border" placeholder="Search..." onchange="app.searchProducts()">
+            </div>
+            <!-- Categories Nav -->
+            <div class="bg-brand-900 text-white text-sm overflow-x-auto">
+                <div class="container mx-auto flex space-x-6 px-4 py-2 whitespace-nowrap">
+                    <button onclick="app.filterCategory('all')" class="hover:text-accent transition">All Deals</button>
+                    <button onclick="app.filterCategory('electronics')" class="hover:text-accent transition">Electronics & Solar</button>
+                    <button onclick="app.filterCategory('fashion')" class="hover:text-accent transition">Fashion</button>
+                    <button onclick="app.filterCategory('local')" class="hover:text-accent transition">Yemeni Products</button>
+                    <button onclick="app.filterCategory('home')" class="hover:text-accent transition">Home & Living</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content (Dynamic) -->
+        <main id="mainContent" class="flex-grow container mx-auto px-4 py-8 fade-in">
+            <!-- Content injected via JS -->
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-gray-300 py-10">
+            <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">About YemenMarket</h3>
+                    <p class="text-sm">The leading e-commerce platform connecting Sana'a, Aden, Taiz, and beyond. Quality products, fast delivery, and secure local payments.</p>
+                </div>
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">Customer Care</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://example.com" class="hover:text-white">Help Center</a></li>
+                        <li><a href="https://example.com" class="hover:text-white">Track Order</a></li>
+                        <li><a href="https://example.com" class="hover:text-white">Returns & Refunds</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">Payment Methods</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">Kurimi M-Flus</span>
+                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">ONE Cash</span>
+                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">Floosak</span>
+                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">Cash on Delivery</span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">Newsletter</h3>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="p-2 rounded-l w-full text-gray-800">
+                        <button class="bg-brand-500 text-white px-4 rounded-r hover:bg-brand-600">Sub</button>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-8 text-xs text-gray-500">
+                &copy; 2025 YemenMarket. All rights reserved.
+            </div>
+        </footer>
+
+        <!-- Cart Sidebar -->
+        <div id="cartSidebar" class="fixed inset-0 z-50 hidden">
+            <div class="absolute inset-0 bg-black bg-opacity-50" onclick="ui.toggleCart()"></div>
+            <div class="absolute right-0 top-0 h-full w-full md:w-96 bg-white shadow-xl flex flex-col slide-in">
+                <div class="p-4 bg-brand-500 text-white flex justify-between items-center">
+                    <h2 class="text-xl font-bold">Your Cart</h2>
+                    <button onclick="ui.toggleCart()"><i class="fa-solid fa-times text-2xl"></i></button>
+                </div>
+                <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-4">
+                    <!-- Cart items injected here -->
+                    <div class="text-center text-gray-500 mt-10">Your cart is empty.</div>
+                </div>
+                <div class="p-4 border-t bg-gray-50">
+                    <div class="flex justify-between mb-2 text-lg font-bold">
+                        <span>Total:</span>
+                        <span id="cartTotal">YER 0</span>
+                    </div>
+                    <button onclick="router.navigate('checkout')" class="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700 transition">
+                        Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white px-6 py-3 rounded shadow-lg transform translate-y-20 transition-transform duration-300 z-50 flex items-center">
+            <i class="fa-solid fa-check-circle text-green-400 mr-2"></i>
+            <span id="toastMsg">Notification</span>
+        </div>
+        
+        <!-- Chat Widget -->
+        <div class="fixed bottom-5 left-5 z-40">
+            <button onclick="ui.toggleChat()" class="bg-brand-500 text-white p-4 rounded-full shadow-lg hover:bg-brand-600 transition">
+                <i class="fa-solid fa-comments text-2xl"></i>
+            </button>
+            <div id="chatWindow" class="hidden absolute bottom-16 left-0 w-80 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
+                <div class="bg-brand-600 text-white p-3 flex justify-between">
+                    <span>Support</span>
+                    <button onclick="ui.toggleChat()">&times;</button>
+                </div>
+                <div class="h-64 p-3 overflow-y-auto text-sm space-y-2 bg-gray-50">
+                    <div class="bg-gray-200 p-2 rounded-lg inline-block">Marhaba! How can we help?</div>
+                </div>
+                <div class="p-2 border-t flex">
+                    <input type="text" placeholder="Type..." class="flex-1 border rounded px-2 text-sm">
+                    <button class="ml-2 text-brand-600"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- DATA MOCKUP ---
+        const DB = {
+            products: [
+                { id: 1, name: "Yemeni Mocha Coffee (1kg)", price: 8500, category: "local", image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=300&q=80", rating: 5, reviews: 120 },
+                { id: 2, name: "Solar Panel 150W Monocrystalline", price: 25000, category: "electronics", image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=300&q=80", rating: 4.5, reviews: 45 },
+                { id: 3, name: "Premium Sidr Honey", price: 15000, category: "local", image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=300&q=80", rating: 5, reviews: 88 },
+                { id: 4, name: "Traditional Jambiya (Decorative)", price: 12000, category: "local", image: "https://placehold.co/300x300/e2e8f0/1e293b?text=Jambiya", rating: 4.8, reviews: 12 },
+                { id: 5, name: "Smartphone Galaxy A54", price: 95000, category: "electronics", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=300&q=80", rating: 4.2, reviews: 200 },
+                { id: 6, name: "Men's Cotton Thobe", price: 6000, category: "fashion", image: "https://placehold.co/300x300/e2e8f0/1e293b?text=Thobe", rating: 4.0, reviews: 30 },
+                { id: 7, name: "Spices Mix (Hawaij)", price: 2000, category: "local", image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=300&q=80", rating: 4.9, reviews: 300 },
+                { id: 8, name: "Wireless Earbuds", price: 4500, category: "electronics", image: "https://images.unsplash.com/photo-1572569028738-411a56103324?auto=format&fit=crop&w=300&q=80", rating: 3.5, reviews: 15 },
+            ],
+            user: {
+                loggedIn: false,
+                name: "Guest",
+                cart: [],
+                wishlist: [],
+                orders: []
+            }
+        };
+
+        // --- STATE MANAGEMENT ---
+        const state = {
+            products: DB.products,
+            cart: [],
+            currency: 'YER'
+        };
+
+        // --- UTILS ---
+        const formatPrice = (price) => `${state.currency} ${price.toLocaleString()}`;
+
+        // --- UI CONTROLLER ---
+        const ui = {
+            toggleCart: () => {
+                const el = document.getElementById('cartSidebar');
+                if(el.classList.contains('hidden')) {
+                    el.classList.remove('hidden');
+                    renderCart();
+                } else {
+                    el.classList.add('hidden');
+                }
+            },
+            toggleChat: () => {
+                const el = document.getElementById('chatWindow');
+                el.classList.toggle('hidden');
+            },
+            toast: (msg, type = 'success') => {
+                const toast = document.getElementById('toast');
+                const toastMsg = document.getElementById('toastMsg');
+                toastMsg.innerText = msg;
+                const colorClass = type === 'error' ? 'text-red-400' : 'text-green-400';
+                toast.firstElementChild.className = `fa-solid fa-${type === 'error' ? 'circle-exclamation' : 'check-circle'} ${colorClass} mr-2`;
+                
+                toast.classList.remove('translate-y-20');
+                setTimeout(() => toast.classList.add('translate-y-20'), 3000);
+            },
+            showLoader: () => {
+                document.getElementById('mainContent').innerHTML = '<div class="flex justify-center py-20"><div class="loader"></div></div>';
+            }
+        };
+
+        // --- APP LOGIC ---
+        const app = {
+            init: () => {
+                router.navigate('home');
+                app.updateCartCount();
+            },
+
+            addToCart: (id) => {
+                const product = state.products.find(p => p.id === id);
+                const existing = state.cart.find(item => item.id === id);
+                if (existing) {
+                    existing.qty++;
+                } else {
+                    state.cart.push({ ...product, qty: 1 });
+                }
+                app.updateCartCount();
+                renderCart();
+                ui.toast(`Added ${product.name} to cart`);
+                
+                // Add tiny animation to cart icon
+                const cartIcon = document.querySelector('.fa-cart-shopping');
+                cartIcon.classList.add('text-brand-500', 'scale-110');
+                setTimeout(() => cartIcon.classList.remove('text-brand-500', 'scale-110'), 200);
+            },
+
+            removeFromCart: (id) => {
+                state.cart = state.cart.filter(item => item.id !== id);
+                app.updateCartCount();
+                renderCart();
+            },
+
+            updateQty: (id, change) => {
+                const item = state.cart.find(i => i.id === id);
+                if (item) {
+                    item.qty += change;
+                    if (item.qty <= 0) app.removeFromCart(id);
+                    else renderCart();
+                    app.updateCartCount();
+                }
+            },
+
+            updateCartCount: () => {
+                const count = state.cart.reduce((acc, item) => acc + item.qty, 0);
+                document.getElementById('cartCount').innerText = count;
+            },
+
+            searchProducts: () => {
+                const query = document.getElementById('searchInput').value.toLowerCase();
+                const filtered = DB.products.filter(p => p.name.toLowerCase().includes(query) || p.category.includes(query));
+                renderProductGrid(filtered, `Results for "${query}"`);
+            },
+
+            filterCategory: (cat) => {
+                if (cat === 'all') {
+                    renderProductGrid(DB.products, "All Products");
+                } else {
+                    const filtered = DB.products.filter(p => p.category === cat);
+                    renderProductGrid(filtered, cat.charAt(0).toUpperCase() + cat.slice(1));
+                }
+            }
+        };
+
+        // --- RENDERERS ---
+        function renderProductGrid(products, title = "Featured Products") {
+            const container = document.getElementById('mainContent');
+            let html = `
+                <div class="mb-6 flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-800">${title}</h2>
+                    <select class="border rounded p-1 text-sm bg-white" onchange="alert('Sorting simulated')">
+                        <option>Sort by: Newest</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">`;
+            
+            if(products.length === 0) {
+                html += `<div class="col-span-4 text-center py-10 text-gray-500">No products found.</div>`;
+            } else {
+                products.forEach(p => {
+                    html += `
+                    <div class="bg-white rounded-lg shadow-sm hover:shadow-xl transition duration-300 border border-gray-100 overflow-hidden group">
+                        <div class="relative h-48 bg-gray-200 overflow-hidden cursor-pointer" onclick="router.navigate('product', ${p.id})">
+                            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute top-2 right-2 bg-white rounded-full p-1 shadow hover:text-red-500 cursor-pointer">
+                                <i class="fa-regular fa-heart"></i>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-xs text-brand-600 uppercase font-semibold mb-1">${p.category}</div>
+                            <h3 class="font-bold text-gray-800 truncate cursor-pointer hover:text-brand-500" onclick="router.navigate('product', ${p.id})">${p.name}</h3>
+                            <div class="flex items-center mt-1 mb-2">
+                                <div class="text-yellow-400 text-xs">
+                                    ${'<i class="fa-solid fa-star"></i>'.repeat(Math.floor(p.rating))}
+                                    ${p.rating % 1 !== 0 ? '<i class="fa-solid fa-star-half-stroke"></i>' : ''}
+                                </div>
+                                <span class="text-xs text-gray-400 ml-1">(${p.reviews})</span>
+                            </div>
+                            <div class="flex justify-between items-center mt-3">
+                                <span class="text-lg font-bold text-brand-900">${formatPrice(p.price)}</span>
+                                <button onclick="app.addToCart(${p.id})" class="bg-gray-100 hover:bg-brand-500 hover:text-white text-gray-800 p-2 rounded-full transition">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            }
+            html += `</div>`;
+            
+            // Add a Promo Banner if on home
+            if(title === "Featured Products") {
+                const banner = `
+                <div class="bg-gradient-to-r from-brand-600 to-brand-400 rounded-2xl p-6 md:p-10 mb-10 text-white relative overflow-hidden shadow-lg">
+                    <div class="relative z-10 max-w-lg">
+                        <span class="bg-accent text-white text-xs font-bold px-2 py-1 rounded mb-2 inline-block">Flash Sale</span>
+                        <h1 class="text-3xl md:text-5xl font-bold mb-4">Sana'a Best Deals</h1>
+                        <p class="mb-6 opacity-90">Get up to 40% off on Solar Panels and Batteries. Limited time offer for our Yemeni customers.</p>
+                        <button onclick="app.filterCategory('electronics')" class="bg-white text-brand-600 px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition shadow-md">Shop Now</button>
+                    </div>
+                    <i class="fa-solid fa-solar-panel absolute -right-10 -bottom-10 text-9xl opacity-20 transform rotate-12"></i>
+                </div>`;
+                container.innerHTML = banner + html;
+            } else {
+                container.innerHTML = html;
+            }
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartItems');
+            const totalEl = document.getElementById('cartTotal');
+            
+            if (state.cart.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-gray-500">
+                    <i class="fa-solid fa-basket-shopping text-4xl mb-4 text-gray-300"></i>
+                    <p>Your cart is empty</p>
+                    <button onclick="ui.toggleCart()" class="text-brand-500 mt-2 underline">Start Shopping</button>
+                </div>`;
+                totalEl.innerText = formatPrice(0);
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            state.cart.forEach(item => {
+                total += item.price * item.qty;
+                html += `
+                <div class="flex items-center gap-4 bg-gray-50 p-2 rounded">
+                    <img src="${item.image}" class="w-16 h-16 object-cover rounded bg-white">
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold line-clamp-1">${item.name}</h4>
+                        <div class="text-brand-600 text-sm font-semibold">${formatPrice(item.price)}</div>
+                        <div class="flex items-center mt-1 gap-2">
+                            <button onclick="app.updateQty(${item.id}, -1)" class="w-6 h-6 bg-gray-200 rounded text-gray-600 hover:bg-gray-300">-</button>
+                            <span class="text-sm w-4 text-center">${item.qty}</span>
+                            <button onclick="app.updateQty(${item.id}, 1)" class="w-6 h-6 bg-gray-200 rounded text-gray-600 hover:bg-gray-300">+</button>
+                        </div>
+                    </div>
+                    <button onclick="app.removeFromCart(${item.id})" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+            totalEl.innerText = formatPrice(total);
+        }
+
+        // --- VIEWS ---
+        const views = {
+            home: () => {
+                renderProductGrid(DB.products, "Featured Products");
+            },
+            
+            product: (id) => {
+                const p = DB.products.find(x => x.id === id);
+                if (!p) return views.home();
+                
+                const html = `
+                <div class="bg-white rounded-xl shadow-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
+                    <div class="bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                        <img src="${p.image}" class="w-full h-auto object-contain max-h-[500px]">
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span class="uppercase tracking-wide">${p.category}</span>
+                            <span class="mx-2">•</span>
+                            <span class="text-yellow-500"><i class="fa-solid fa-star"></i> ${p.rating} (${p.reviews} Reviews)</span>
+                        </div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-4">${p.name}</h1>
+                        <p class="text-gray-600 mb-6 leading-relaxed">Experience high quality with this authentic product. Sourced directly from trusted suppliers in the region. Durable, reliable, and exactly what you need.</p>
+                        
+                        <div class="text-3xl font-bold text-brand-600 mb-6">${formatPrice(p.price)}</div>
+                        
+                        <div class="flex gap-4 mb-8">
+                            <button onclick="app.addToCart(${p.id})" class="flex-1 bg-brand-600 text-white py-3 px-6 rounded-lg font-bold hover:bg-brand-700 shadow-lg transform hover:-translate-y-1 transition">
+                                Add to Cart
+                            </button>
+                            <button class="bg-gray-100 text-gray-800 p-3 rounded-lg hover:bg-gray-200"><i class="fa-regular fa-heart text-xl"></i></button>
+                        </div>
+
+                        <div class="border-t pt-6 space-y-3 text-sm text-gray-600">
+                            <div class="flex items-center"><i class="fa-solid fa-truck w-6 text-brand-500"></i> Delivery to Sana'a, Aden & Major Cities</div>
+                            <div class="flex items-center"><i class="fa-solid fa-shield-halved w-6 text-brand-500"></i> 1 Year Warranty</div>
+                            <div class="flex items-center"><i class="fa-solid fa-rotate-left w-6 text-brand-500"></i> 7 Days Return Policy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Products Mockup -->
+                <div class="mt-12">
+                    <h3 class="text-xl font-bold mb-4">You might also like</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 opacity-70">
+                        ${DB.products.slice(0,4).map(rp => `
+                            <div class="bg-white p-3 rounded shadow cursor-pointer" onclick="router.navigate('product', ${rp.id})">
+                                <img src="${rp.image}" class="h-24 w-full object-cover rounded mb-2">
+                                <p class="text-xs font-bold truncate">${rp.name}</p>
+                                <p class="text-xs text-brand-600">${formatPrice(rp.price)}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+                document.getElementById('mainContent').innerHTML = html;
+                window.scrollTo(0,0);
+            },
+
+            checkout: () => {
+                if (state.cart.length === 0) {
+                    ui.toast('Cart is empty', 'error');
+                    return;
+                }
+                ui.toggleCart(); // Close sidebar
+                
+                const total = state.cart.reduce((a, b) => a + (b.price * b.qty), 0);
+                
+                const html = `
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Checkout Form -->
+                    <div class="flex-1 bg-white p-6 rounded-lg shadow-sm">
+                        <h2 class="text-2xl font-bold mb-6 border-b pb-2">Checkout</h2>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-bold mb-3 text-gray-700">1. Shipping Address</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="text" placeholder="Full Name" class="border p-2 rounded focus:border-brand-500 outline-none w-full">
+                                <input type="text" placeholder="Phone Number (+967...)" class="border p-2 rounded focus:border-brand-500 outline-none w-full">
+                                <select class="border p-2 rounded w-full bg-white">
+                                    <option>Select City</option>
+                                    <option>Sana'a</option>
+                                    <option>Aden</option>
+                                    <option>Taiz</option>
+                                    <option>Ibb</option>
+                                    <option>Hodeidah</option>
+                                    <option>Mukalla</option>
+                                </select>
+                                <input type="text" placeholder="Street Address / Building" class="border p-2 rounded focus:border-brand-500 outline-none w-full">
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="font-bold mb-3 text-gray-700">2. Payment Method</h3>
+                            <div class="space-y-3">
+                                <label class="flex items-center border p-3 rounded cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="payment" checked class="mr-3">
+                                    <div>
+                                        <div class="font-bold">Cash on Delivery (COD)</div>
+                                        <div class="text-xs text-gray-500">Pay when you receive the product</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center border p-3 rounded cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="payment" class="mr-3">
+                                    <div class="flex-1 flex justify-between items-center">
+                                        <div>
+                                            <div class="font-bold">Kurimi M-Flus / Jawali</div>
+                                            <div class="text-xs text-gray-500">Mobile Wallet Transfer</div>
+                                        </div>
+                                        <i class="fa-solid fa-wallet text-brand-500 text-xl"></i>
+                                    </div>
+                                </label>
+                                <label class="flex items-center border p-3 rounded cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="payment" class="mr-3">
+                                    <div>
+                                        <div class="font-bold">ONE Cash</div>
+                                        <div class="text-xs text-gray-500">Electronic Payment</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center border p-3 rounded cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="payment" class="mr-3">
+                                    <div>
+                                        <div class="font-bold">Floosak</div>
+                                        <div class="text-xs text-gray-500">Secure wallet payment</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button onclick="processOrder()" class="w-full bg-brand-600 text-white py-3 rounded font-bold text-lg hover:bg-brand-700 transition">Place Order</button>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="lg:w-96">
+                        <div class="bg-gray-50 p-6 rounded-lg sticky top-24">
+                            <h3 class="font-bold text-gray-700 mb-4">Order Summary</h3>
+                            <div class="space-y-2 mb-4 text-sm max-h-40 overflow-y-auto">
+                                ${state.cart.map(i => `
+                                    <div class="flex justify-between">
+                                        <span>${i.qty}x ${i.name}</span>
+                                        <span>${formatPrice(i.price * i.qty)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="border-t pt-4 space-y-2">
+                                <div class="flex justify-between text-gray-600"><span>Subtotal</span> <span>${formatPrice(total)}</span></div>
+                                <div class="flex justify-between text-gray-600"><span>Shipping</span> <span>${formatPrice(1000)}</span></div>
+                                <div class="flex justify-between font-bold text-xl mt-2 text-brand-900">
+                                    <span>Total</span>
+                                    <span>${formatPrice(total + 1000)}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Coupon -->
+                            <div class="mt-6 flex gap-2">
+                                <input type="text" placeholder="Coupon Code" class="border p-2 rounded flex-1 text-sm">
+                                <button onclick="ui.toast('Coupon Invalid', 'error')" class="bg-gray-800 text-white px-3 rounded text-sm">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+                document.getElementById('mainContent').innerHTML = html;
+            },
+            
+            success: () => {
+                const orderId = '#YM-' + Math.floor(Math.random() * 100000);
+                const html = `
+                <div class="max-w-md mx-auto bg-white p-10 rounded-xl shadow-lg text-center animate-fade-in mt-10">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-check text-4xl text-green-500"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Order Confirmed!</h2>
+                    <p class="text-gray-500 mb-6">Thank you for shopping with YemenMarket. Your order <span class="font-mono font-bold text-black">${orderId}</span> has been received.</p>
+                    <p class="text-sm text-gray-400 mb-8">You will receive an SMS confirmation shortly on your provided number.</p>
+                    <button onclick="router.navigate('home')" class="bg-brand-600 text-white px-8 py-3 rounded-full font-bold hover:bg-brand-700 transition">Continue Shopping</button>
+                </div>
+                `;
+                document.getElementById('mainContent').innerHTML = html;
+            },
+            
+            account: () => {
+                const html = `
+                <div class="max-w-4xl mx-auto bg-white rounded-lg shadow min-h-[400px] flex flex-col md:flex-row overflow-hidden">
+                    <div class="w-full md:w-64 bg-gray-800 text-white p-6">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-12 h-12 rounded-full bg-brand-500 flex items-center justify-center text-xl font-bold">G</div>
+                            <div>
+                                <div class="font-bold">Guest User</div>
+                                <div class="text-xs text-gray-400">Sana'a, Yemen</div>
+                            </div>
+                        </div>
+                        <nav class="space-y-2">
+                            <a href="#" class="block bg-gray-700 px-4 py-2 rounded">My Orders</a>
+                            <a href="#" class="block hover:bg-gray-700 px-4 py-2 rounded opacity-50">Wishlist</a>
+                            <a href="#" class="block hover:bg-gray-700 px-4 py-2 rounded opacity-50">Addresses</a>
+                            <a href="#" class="block hover:bg-gray-700 px-4 py-2 rounded opacity-50">Settings</a>
+                        </nav>
+                    </div>
+                    <div class="flex-1 p-8">
+                        <h2 class="text-2xl font-bold mb-6">Order History</h2>
+                        <div class="border rounded-lg overflow-hidden">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-50 border-b">
+                                    <tr>
+                                        <th class="p-4">Order ID</th>
+                                        <th class="p-4">Date</th>
+                                        <th class="p-4">Status</th>
+                                        <th class="p-4">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm">
+                                    <tr class="border-b">
+                                        <td class="p-4 font-mono">#YM-8821</td>
+                                        <td class="p-4">Oct 24, 2025</td>
+                                        <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Delivered</span></td>
+                                        <td class="p-4">YER 14,500</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-mono">#YM-1102</td>
+                                        <td class="p-4">Aug 10, 2025</td>
+                                        <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Delivered</span></td>
+                                        <td class="p-4">YER 8,200</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                `;
+                document.getElementById('mainContent').innerHTML = html;
+            }
+        };
+
+        // --- ROUTER ---
+        const router = {
+            navigate: (page, param = null) => {
+                ui.showLoader();
+                // Simulate network latency for realism
+                setTimeout(() => {
+                    if (page === 'home') views.home();
+                    else if (page === 'product') views.product(param);
+                    else if (page === 'checkout') views.checkout();
+                    else if (page === 'success') views.success();
+                    else if (page === 'account') views.account();
+                }, 400);
+            }
+        };
+
+        // --- CHECKOUT PROCESS SIMULATION ---
+        function processOrder() {
+            const btn = document.querySelector('button[onclick="processOrder()"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Processing Payment...";
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            setTimeout(() => {
+                state.cart = [];
+                app.updateCartCount();
+                renderCart();
+                router.navigate('success');
+                ui.toast('Payment Successful!');
+            }, 2000);
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', app.init);
+
+    </script>
+</body>
+</html>pp
+        document.addEventListener('DOMContentLoaded', app.init);
+
+    </script>
+</body>
+</html>l>
